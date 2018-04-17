@@ -11,3 +11,10 @@ Vec3 = function() {
 }
 
 Vec3.prototype.add = function() {}
+
+class Test {
+  constructor( x, y) {
+    this.x = x;
+    this.y = y;
+  }
+}

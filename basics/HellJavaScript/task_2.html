@@ -1,0 +1,206 @@
+<html>
+    <head>
+        <title>Task 2</title>
+        <style>
+        input[type="number"] {
+            text-align: right;
+            width: 140px;
+        }
+        form {
+            min-width:250px;
+            width:250px;
+        }
+        </style>
+        <script>
+        var v0, v1, v2;
+        var vertices = [];
+        //Classes and computational formulas
+        Vec3 = function( x, y, z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+
+            this.elements = [ x, y, z];
+        }
+
+        function AreaOfTriangle( v0, v1, v2) {
+            //v0, v1, v2 are all Vec3
+            //v0.elements == [ x, y , z]
+            //Make two vectors out of the vertices
+            V1 = [];
+            V2 = [];
+            for( var i = 0; i < 3; i++) {
+                V1.push( v0.elements[i] - v1.elements[i]);
+                V2.push( v0.elements[i] - v2.elements[i]);
+            }
+
+            console.log( V1, V2);
+            //Computing the cross product of the two vectors
+            cross_product = [
+
+                V1[1] * V2[2] - V2[1] * V1[2] , // x coordinate of the dot product
+                V1[2] * V2[0] - V2[2] * V1[0], // y coordinate ...
+                V1[0] * V2[1] - V2[0] * V1[1], // z coordinate ...
+            ]
+            console.log( cross_product);
+
+            //Compute the norm of the cross product
+            norm = 0;
+            for( var i = 0; i < 3; i++) {
+                //Square the components
+                norm +=  cross_product[i] * cross_product[i];
+            }
+            // Take the square root of the sum of the squared components
+            norm = Math.sqrt( norm);
+
+            //The triangle area is the half of the norm of the cross product
+            return norm / 2;
+        };
+
+        //HTML Interaction and stuff
+        function compute() {
+            vertices =[];
+            //Load values from the form
+            for( var i = 0; i < 3; i++) {
+                //Iterate through the vertices and load their respective data
+                vertex = [];
+                for( var j = 0; j < 3; j++) {
+                    //Iterate through x,y and z coordinate and read from the HTML
+                    vertex.push(
+                         Number( document.getElementById( generateElementId(i,j)).value)
+                    );
+                }
+                vertices.push( vertex);
+            }
+
+            v0 = new Vec3( vertices[0][0], vertices[0][1], vertices[0][2]);
+            v1 = new Vec3( vertices[1][0], vertices[1][1], vertices[1][2]);
+            v2 = new Vec3( vertices[2][0], vertices[2][1], vertices[2][2]);
+
+            // console.log( v0, v1, v2);
+
+            area = AreaOfTriangle( v0, v1, v2);
+
+            //Show in the result div of the HTML page
+            document.getElementById( "result").innerHTML = "Area S = " + area + " units";
+        }
+
+        function generateElementId( vertex_number, coordinate) {
+            tmp = "form_vertex_$_%";
+
+            return tmp.replace( "$", vertex_number).replace( "%", coordinate);
+        }
+
+        function init() {
+            var v0, v1, v2;
+            var vertices = [];
+            document.getElementById( "result").innerHTML = "Nothing to show yet."
+        }
+
+        </script>
+    </head>
+
+    <body onload="init();">
+        <form id="form">
+            <fieldset style="">
+                <legend>
+                    Vertex 0
+                </legend>
+                <table>
+
+                    <tr>
+                        <td>
+                            <label>
+                            Enter x0:<input type="number" id="form_vertex_0_0" value=0 />
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>
+                            Enter y0:<input type="number" id="form_vertex_0_1" value=0 />
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>
+                            Enter z0:<input type="number" id="form_vertex_0_2" value=0 />
+                            </label>
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+
+            <fieldset style="">
+                <legend>
+                    Vertex 1
+                </legend>
+                <table>
+
+                    <tr>
+                        <td>
+                            <label>
+                            Enter x1:<input type="number" id="form_vertex_1_0" value=1 />
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>
+                            Enter y1:<input type="number" id="form_vertex_1_1" value=0 />
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>
+                            Enter z1:<input type="number" id="form_vertex_1_2" value=0 />
+                            </label>
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+
+            <fieldset style="">
+                <legend>
+                    Vertex 2
+                </legend>
+                <table>
+
+                    <tr>
+                        <td>
+                            <label>
+                            Enter x2:<input type="number" id="form_vertex_2_0" value=0 />
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>
+                            Enter y2:<input type="number" id="form_vertex_2_1" value=1 />
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>
+                            Enter z2:<input type="number" id="form_vertex_2_2" value=0 />
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="reset" onclick="init();" />
+                            <input type="button" onclick="compute();" value="Go">
+                            </input>
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+        </form>
+        <p style="border: 1px dashed black; min-width: 20px; width: 250px; text-align: center;" id="result">
+
+        </p>
+    </body>
+</html>

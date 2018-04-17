@@ -1,0 +1,131 @@
+<html>
+    <head>
+        <title>Task 1</title>
+        <style>
+        input[type="number"] {
+            text-align: right;
+        }
+        </style>
+        <script>
+            //Vec3 Class
+            Vec3 = function( x, y, z) {
+                this.x = x;
+                this.y = y;
+                this.z = z;
+
+                this.elements = [ x, y, z];
+            }
+
+            Vec3.prototype.min = function() {
+                min = Number.MAX_VALUE;
+                for( var i = 0; i < this.elements.length; ++i) {
+                    current_element = this.elements[i]
+                    if( current_element < min)
+                        min = current_element;
+                }
+
+                return min;
+            }
+
+            Vec3.prototype.max = function() {
+                max = Number.MIN_VALUE;
+                for( var i = 0; i < this.elements.length; ++i) {
+                    current_element = this.elements[i]
+                    if( current_element > max)
+                        max = current_element;
+                }
+
+                return max;
+            }
+            Vec3.prototype.mid = function() {
+                mid = 0;
+
+                for( var i = 0; i < this.elements.length; ++i){
+                    current = this.elements[i];
+                    if( current != this.max() && current != this.min())
+                        mid = current;
+                }
+
+                return mid;
+            }
+
+            //HTML interaction
+            var vec3 = undefined;
+
+            function createVec3() {
+                x = Number( document.getElementById( "form_x").value);
+                y = Number( document.getElementById( "form_y").value);
+                z = Number( document.getElementById( "form_z").value);
+
+                vec3 = new Vec3( x, y, z);
+
+                document.getElementById( "min").innerHTML = "Min:" + vec3.min();
+                document.getElementById( "mid").innerHTML = "Mid:" + vec3.mid();
+                document.getElementById( "max").innerHTML = "Max:" + vec3.max();
+            }
+
+            function clearAll() {
+                vec3 = undefined;
+                document.getElementById( "min").innerHTML = ""
+                document.getElementById( "mid").innerHTML = ""
+                document.getElementById( "max").innerHTML = ""
+            }
+        </script>
+    </head>
+    <body>
+        <form id="form" style="width: 30px;">
+            <fieldset>
+                <legend>
+                    Vec3 components
+                </legend>
+                <table>
+
+                    <tr>
+                        <td>
+                            <label>
+                            Enter x:<input type="number" id="form_x" value=5 />
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>
+                            Enter y:<input type="number" id="form_y" value=4 />
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>
+                            Enter z:<input type="number" id="form_z" value=9 />
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="reset" onclick="clearAll();" />
+                            <input type="button" onclick="createVec3();" value="Go">
+                            </input>
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+
+            <fieldset>
+                <legend>
+                    Result
+                </legend>
+                <p id="min">
+
+                </p>
+                <p id="max">
+
+                </p>
+                <p id="mid">
+
+                </p>
+
+            </fieldset>
+        </form>
+    </body>
+</html>
