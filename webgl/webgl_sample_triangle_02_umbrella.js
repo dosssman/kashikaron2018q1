@@ -47,15 +47,20 @@ function load_shader( type, shader_source) {
 function setup_shaders() {
   var vertex_shader_source =
     "attribute vec3 a_vertex_position;"+
-    "void main() { gl_Position = vec4( a_vertex_position, 1);"+
+    "attribute vec4 a_vertex_color;"+
+    "varying vec4 v_color;"+
+    "void main() {"+
+      "v_color = a_vertex_color;"+
+      "gl_Position = vec4( a_vertex_position, 1);"+
     // " gl_Position *= vec4( -.2, -1, 1, 1);"+
     "}"
 
   var fragment_shader_source =
     "precision mediump float;"+
+    "varying vec4 v_color;"+
     // "uniform vec4 a_color;"+
-    "void main() { gl_FragColor = vec4(  .78, 0.03, 0.18, 1.0); }"
-    // "void main() { gl_FragColor = vec4(  a_color); }"
+    // "void main() { gl_FragColor = vec4(  .78, 0.03, 0.18, 1.0); }";
+    "void main() { gl_FragColor = vec4(  v_color); }"
 
   var vertex_shader = load_shader(gl.VERTEX_SHADER, vertex_shader_source);
   var fragment_shader =
@@ -76,6 +81,9 @@ function setup_shaders() {
 
   shader_program.vertex_position_attribute =
     gl.getAttribLocation( shader_program, "a_vertex_position");
+
+    shader_program.vertex_color_attribute =
+      gl.getAttribLocation( shader_program, "a_vertex_color");
 }
 
 function setup_buffers() {
@@ -149,14 +157,10 @@ function draw() {
                           vertex_buffer.item_size, gl.FLOAT, false, 0, 0);
 
   gl.enableVertexAttribArray( shader_program.vertex_position_attribute);
+
+  gl.vertexAttrib4f( shader_program.vertex_color_attribute,
+                    .78, 0.03, 0.18, 1.0);
   gl.drawElements( gl.TRIANGLES, /*index_buffer.size*/ 12, gl.UNSIGNED_SHORT, 0);
-
-  //Change color then draw the rest
-  gl.drawElements( gl.TRIANGLES, /*index_buffer.size*/ 12, gl.UNSIGNED_SHORT, 11);
-}
-
-function draw_2() {
-    gl.drawElements( gl.TRIANGLES, white_index_buffer.size, gl.UNSIGNED_SHORT, 0);
 }
 
 function startup() {

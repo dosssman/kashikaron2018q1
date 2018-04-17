@@ -34,7 +34,6 @@
                 V2.push( v0.elements[i] - v2.elements[i]);
             }
 
-            console.log( V1, V2);
             //Computing the cross product of the two vectors
             cross_product = [
 
@@ -42,7 +41,6 @@
                 V1[2] * V2[0] - V2[2] * V1[0], // y coordinate ...
                 V1[0] * V2[1] - V2[0] * V1[1], // z coordinate ...
             ]
-            console.log( cross_product);
 
             //Compute the norm of the cross product
             norm = 0;
@@ -82,7 +80,7 @@
             area = AreaOfTriangle( v0, v1, v2);
 
             //Show in the result div of the HTML page
-            document.getElementById( "result").innerHTML = "Area S = " + area + " units";
+            document.getElementById( "result").innerHTML = "<h2>Area S = " + area + " units</h2>";
         }
 
         function generateElementId( vertex_number, coordinate) {
@@ -94,7 +92,7 @@
         function init() {
             var v0, v1, v2;
             var vertices = [];
-            document.getElementById( "result").innerHTML = "Nothing to show yet."
+            document.getElementById( "result").innerHTML = "<h2>Nothing to show yet.</h2>"
         }
 
         </script>
