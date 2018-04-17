@@ -1,0 +1,15 @@
+<html>
+  <title>Custom WebGL Sample Triangle 00</title>
+  <meta charset="utf-8">
+
+  <style type="text/css">
+    canvas {
+      border: 2px solid black;
+    }
+  </style>
+  <script type="text/javascript" src="webgl_sample_triangle_02_umbrella.js"></script>
+
+  <body onload="startup();">
+    <canvas id="my_gl_canvas" width="480" height="480"></canvas>
+  </body>
+</html>
