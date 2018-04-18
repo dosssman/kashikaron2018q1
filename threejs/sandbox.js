@@ -20,10 +20,10 @@ function main() {
 
 
   var light = new THREE.PointLight( 0xffffff);
-  light.position.set( 0,0,5);
+  light.position.set( 0,0,10);
   scene.add( light);
 
-  var geometry = new THREE.CubeGeometry( 1,1,1);
+  var geometry = new THREE.SphereGeometry( 1,32,32);
 
   var material = new THREE.MeshLambertMaterial( { color: "blue"});
   var cube = new THREE.Mesh( geometry, material);
