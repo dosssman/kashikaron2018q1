@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 function main() {
   var width = 400;
   var height = 400;
@@ -40,3 +41,16 @@ function main() {
 }
 
 main();
+=======
+var scene = new THREE.Scene();
+
+
+var params = { antialias: true, depth: true};
+var renderer = new THREE.WebGLRenderer( params);
+
+console.log( renderer);
+renderer->setSize( 640, 480);
+
+document.body.appendChild( renderer.domElement);
+document.body.appendChild( renderer.domElement);
+>>>>>>> 1ab933fb7d841a64fb3dfaffa982df07e9259f60
