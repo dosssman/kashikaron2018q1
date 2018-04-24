@@ -75,7 +75,6 @@ function main() {
   var cube = new THREE.Mesh( geometry, material);
   scene.add( cube);
 
-  }
   //Loop and render
   loop();
 
