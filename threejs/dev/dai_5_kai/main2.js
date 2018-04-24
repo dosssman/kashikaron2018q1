@@ -75,6 +75,50 @@ function main() {
   var cube = new THREE.Mesh( geometry, material);
   scene.add( cube);
 
+  //Change color on click
+
+  document.addEventListener( 'mousedown', mouse_down_event);
+  function mouse_down_event( event) {
+    //Getting clicked point in WebGL window
+    var x_win = event.clientX;
+    var y_win = event.clientY;
+
+    // Viewport
+    var vx = renderer.domElement.offsetLeft;
+    var vy = renderer.domElement.offsetTop;
+    var vw = renderer.domElement.width;
+    var vh = renderer.domElement.height;
+
+    // Window coordinates to normalized device coordinates
+    // Origin of NDC: center
+    var x_NDC = 2 * ( x_win - vx ) / vw - 1;
+    var y_NDC = -( 2 * ( y_win - vy ) / vh - 1 );
+
+    // Normalized device coordinates to world coordinates
+    var p_NDC = new THREE.Vector3( x_NDC, y_NDC, 1 );
+    var p_wld = p_NDC.unproject( camera );
+
+    var origin = camera.position;
+    var direction = p_wld.sub( camera.position ).normalize();
+    var raycaster = new THREE.Raycaster( origin, direction );
+    var intersects = raycaster.intersectObject( cube );
+
+    default_color = new THREE.Color( "white");
+    changed_color = new THREE.Color( "red");
+
+    if ( intersects.length > 0 )
+    {
+        // Change to switch the color
+
+        if( intersects[0].face.color.equals( default_color))
+          intersects[0].face.color.setRGB( changed_color["r"],
+            changed_color["g"], changed_color["b"]);
+        else
+          intersects[0].face.color.setRGB( default_color["r"],
+            default_color["g"], default_color["b"]);
+
+        intersects[0].object.geometry.colorsNeedUpdate = true;
+    }
   }
   //Loop and render
   loop();
