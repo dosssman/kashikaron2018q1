@@ -109,10 +109,10 @@
            textos.innerHTML = " The Lambertion model ends up rendering a mate surface," +
             "the ambiant reflection model enables the knot to be seen in the first place by reflecting " +
             "the light source to the camera, while the diffuse model generates the observable shadows " +
-            "on the convex surface. Hypotheticaly, the shadows are the result of light reflected in scattered " +
-            "way that the reflected light vectors interfer with each other and reduce the perceptible reflection " +
+            "on the convex surface. Hypotheticaly, the shadows are the result of light vectors diffusely reflected " +
+            "in such way that they interfer with each other and reduce the intensity of the reflection " +
             "of the surface.<br /><br />" +
-            "However, the Phong model ends up rendering a shiny, metallique like surface. The shininess is due to "+
+            "However, the Phong model ends up rendering a shiny, metallique like surface. Both the ambient and diffuse models' features are available.The shininess is due to "+
             "implementation of the specular reflecton model on top of the ambient and diffuse ones.";
            document.body.appendChild( textos);
 	         </script>
