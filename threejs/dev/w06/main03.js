@@ -18,7 +18,7 @@ function loadShaderFromDom( id) {
 }
 
 //Renamed main to main1 to use it in Task2 too
-function main1()
+function main()
 {
     var width = 500;
     var height = 500;
@@ -46,10 +46,10 @@ function main1()
 
     var material = new THREE.ShaderMaterial({
       vertexColors: THREE.VertexColors,
-      vertexShader: loadShaderFromDom( "gouraud.vert"),
-      fragmentShader: loadShaderFromDom( "gouraud.frag"),
+      vertexShader: loadShaderFromDom( "blinn_phong.vert"),
+      fragmentShader: loadShaderFromDom( "blinn_phong.frag"),
       uniforms: {
-        light_position: { type: 'v3', value: light.position }
+        inputPosition: { type: 'v3', value: light.position }
       }
     });
 

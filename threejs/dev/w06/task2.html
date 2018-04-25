@@ -2,7 +2,7 @@
     <head>
 	       <title>W06: Task 02</title>
 
-           <script type="x-shader/x-vertex" id="gouraud.vert">
+           <script type="x-shader/x-vertex" id="phong.vert">
                varying vec3 point_color;
                varying vec4 point_position;
                varying vec3 normal_vector;
@@ -16,7 +16,7 @@
                      float n = 50.0;
                      vec3 R = reflect( -L, N );
                      float dd = max( dot( N, L ), 0.0 );
-                     float ds = pow( max( dot( R, V ), 0.0 ), n );
+                     float ds = pow( max( dot( R, N ), 0.0 ), n );
                      if ( dd <= 0.0 ) { ds = 0.0; }
                      float Ia = ka;
                      float Id = kd * dd;
@@ -35,6 +35,40 @@
                    gl_Position = projectionMatrix * point_position;
                }
            </script>
+           <script type="x-shader/x-fragment" id="phong.frag">
+               varying vec3 point_color;
+
+               void main() {
+                   gl_FragColor = vec4( point_color, 1.0);
+               }
+           </script>
+
+           <script type="x-shader/x-vertex" id="gouraud.vert">
+               varying vec3 point_color;
+               varying vec4 point_position;
+               varying vec3 normal_vector;
+               uniform vec3 light_position;
+               vec3 LambertianReflection( vec3 C, vec3 L, vec3 N )
+                {
+                    float ka = 0.4;
+                    float kd = 0.6;
+                    float dd = max( dot( N, L ), 0.0 );
+                    float Ia = ka;
+                    float Id = kd * dd;
+                    return C * ( Ia + Id );
+                }
+
+               void main()
+               {
+                   point_position = modelViewMatrix * vec4( position, 1.0 );
+                   normal_vector = normalMatrix * normal;
+                   vec3 C = color;
+                   vec3 L = normalize( light_position - point_position.xyz );
+                   vec3 N = normalize( normal_vector );
+                   point_color = LambertianReflection( C, L, N );
+                   gl_Position = projectionMatrix * point_position;
+               }
+           </script>
            <script type="x-shader/x-fragment" id="gouraud.frag">
                varying vec3 point_color;
 
@@ -42,12 +76,45 @@
                    gl_FragColor = vec4( point_color, 1.0);
                }
            </script>
+           <style>
+            .comp_text {
+              text-align: justify;
+              max-width: 500px;
+            }
+           </style>
     </head>
     <body>
 	       <script src="https://threejs.org/build/three.min.js"></script>
-	<script src="main02.js"></script>
-	<script>
-	   main();
-	</script>
+         <!-- For comparison, require the simple Gouraud code too -->
+         <script src="main01.js"></script>
+         <script src="main02.js"></script>
+	         <script>
+           var titlePhong = document.createElement( "h3");
+           titlePhong.innerHTML = "Phong Reflection Shader";
+           document.body.appendChild( titlePhong);
+	          main();
+
+           var titleLamb = document.createElement( "h3");
+           titleLamb.innerHTML = "Lambertian Reflection Shader";
+           document.body.appendChild( titleLamb);
+
+            main1();
+
+           var titleComp = document.createElement( "h3");
+           titleComp.innerHTML = "Comparison";
+           document.body.appendChild( titleComp);
+
+           var textos = document.createElement( "div");
+           textos.classList.add( "comp_text");
+           textos.innerHTML = " The Lambertion model ends up rendering a mate surface," +
+            "the ambiant reflection model enables the knot to be seen in the first place by reflecting " +
+            "the light source to the camera, while the diffuse model generates the observable shadows " +
+            "on the convex surface. Hypotheticaly, the shadows are the result of light reflected in scattered " +
+            "way that the reflected light vectors interfer with each other and reduce the perceptible reflection " +
+            "of the surface.<br /><br />" +
+            "However, the Phong model ends up rendering a shiny, metallique like surface. The shininess is due to "+
+            "implementation of the specular reflecton model on top of the ambient and diffuse ones.";
+           document.body.appendChild( textos);
+	         </script>
     </body>
 </html>
