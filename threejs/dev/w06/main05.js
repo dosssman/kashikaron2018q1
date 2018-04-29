@@ -34,22 +34,25 @@ function main()
     scene.add( camera );
 
     var light = new THREE.PointLight();
-    light.position.set( 5, 5, 5 );
+    light.position.set( 5, 5, 5);
     scene.add( light );
 
-    var renderer = new THREE.WebGLRenderer();
+    var renderer = new THREE.WebGLRenderer( { alpha: true });
     renderer.setSize( width, height );
+    renderer.setClearColor( 0xffffff, 0);
     document.body.appendChild( renderer.domElement );
 
     var geometry = new THREE.TorusKnotGeometry( 1, 0.3, 100, 20 );
-    // var material = new THREE.MeshLambertMaterial();
+    // var geometry = new THREE.SphereGeometry( 1, 32, 32, 1.0);
+    // var material = new THREE.MeshToonMaterial();
 
     var material = new THREE.ShaderMaterial({
       vertexColors: THREE.VertexColors,
-      vertexShader: loadShaderFromDom( "blinn_phong.vert"),
-      fragmentShader: loadShaderFromDom( "phong.frag"),
+      vertexShader: loadShaderFromDom( "toon.vert"),
+      fragmentShader: loadShaderFromDom( "toon.frag"),
       uniforms: {
-        inputPosition: { type: 'v3', value: light.position }
+        inputPosition: { type: 'v3', value: light.position },
+        tonesCount:{ type: 'float' , value: 5}
       }
     });
 
@@ -61,8 +64,8 @@ function main()
     function loop()
     {
         requestAnimationFrame( loop );
-        torus_knot.rotation.x += 0.005;
-        torus_knot.rotation.y += 0.005;
+        torus_knot.rotation.x += 0.01;
+        torus_knot.rotation.y += 0.01;
         renderer.render( scene, camera );
     }
 }

@@ -1,6 +1,24 @@
-//loadShaderFromDom comes from main01.js
+function loadShaderFromDom( id) {
+  var shader_script = document.getElementById( id);
 
-function main2()
+  if( !shader_script) { return null;}
+
+  //Reading all the lines of the script, appending to shader source variable
+  var shader_source = "";
+  var current_child = shader_script.firstChild;
+
+  while( current_child) {
+    if( current_child.nodeType == 3) {
+      shader_source += current_child.textContent;
+    }
+    current_child = current_child.nextSibling;
+  }
+
+  return shader_source;
+}
+
+//Renamed main to main1 to use it in Task2 too
+function main()
 {
     var width = 500;
     var height = 500;
@@ -28,10 +46,10 @@ function main2()
 
     var material = new THREE.ShaderMaterial({
       vertexColors: THREE.VertexColors,
-      vertexShader: loadShaderFromDom( "phong.vert"),
+      vertexShader: loadShaderFromDom( "cook_torrance.vert"),
       fragmentShader: loadShaderFromDom( "phong.frag"),
       uniforms: {
-        light_position: { type: 'v3', value: light.position }
+        inputPosition: { type: 'v3', value: light.position }
       }
     });
 

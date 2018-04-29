@@ -1,32 +1,60 @@
 <html>
     <head>
-	       <title>W06: Task 03 Blinn-Phong</title>
-           <script type="x-shader/x-vertex" id="blinn_phong.vert">
+	       <title>W06: Task 04 Cook Torrance Try</title>
+           <script type="x-shader/x-vertex" id="cook_torrance.vert">
                varying vec3 point_color;
                varying vec3 normal_vector;
                varying vec4 point_position;
                uniform vec3 light_position;
 
-               vec3 BlinnPhongReflection( vec3 C, vec3 L, vec3 N )
+               vec3 CookTorranceReflection( vec3 C, vec3 L, vec3 N )
                  {
+                     float PI = 3.14159265;
                      float ka = 0.3;
                      float kd = 0.5;
                      float ks = 0.8;
                      float n = 50.0;
+                     //Cook Torrance additional params
+                     float roughness = .21;
+                     float F0 = .975; // Schlik's appro; Refflection intensity of
+                     //light parallel to the normal;
 
                      //View Vector
                      vec3 V = - point_position.xyz;
 
-                     //Reflected vector
                      vec3 R = reflect( -L, N );
 
-                     // Halfway Vector
-                     vec3 H = normalize( L + V);
+                     float dd = max( dot( N, L ), 0.0 ); //NdotL
+                     float ds = .0;
 
-                     float dd = max( dot( N, L ), 0.0 );
-                     float ds = pow( max( dot( H, N ), 0.0 ), n );
+                     if ( dd > 0.0) {
+                         // Halfway Vector
+                         vec3 H = normalize(L+V);
+                         float NdotH = max(.0, dot(N, H));
+                         float NdotV = max(.0, dot(N, V));
+                         float VdotH = max(.0, dot(L, H));
 
-                     if ( dd <= 0.0 ) { ds = 0.0; }
+                         // Fresnel Reflectance using Schlick's approximation
+                         float F = pow(1.0 + VdotH, 5.0);
+                         F *= (1.0 - F0);
+                         F += F0;
+
+                         //Beckmann Microfascet distributions
+                         float m_squared = roughness * roughness;
+                         float r1 = 1.0 / (PI * m_squared * pow(NdotH, 4.0));
+                         float r2 = (NdotH * NdotH - 1.0) / (m_squared * NdotH * NdotH);
+                         float D = r1 * exp(r2);
+
+                         // Geometric shadowing
+                         float two_NdotH = 2.0 * NdotH;
+                         float g1 = (two_NdotH * NdotV) / VdotH;
+                         float g2 = (two_NdotH * dd) / VdotH;
+                         float G = min(1.0, min(g1, g2));
+
+                         // Geometric Attenuation Term
+                         ds = (F * D * G) / (4.0 * dd * NdotV);
+                     }
+
                      float Ia = ka;
                      float Id = kd * dd;
                      float Is = ks * ds;
@@ -40,7 +68,7 @@
                    vec3 C = color;
                    vec3 L = normalize( light_position - point_position.xyz );
                    vec3 N = normalize( normal_vector );
-                   point_color = BlinnPhongReflection( C, L, N );
+                   point_color = CookTorranceReflection( C, L, N );
                    gl_Position = projectionMatrix * point_position;
                }
            </script>
@@ -88,18 +116,18 @@
     </head>
     <body>
 	     <script src="https://threejs.org/build/three.min.js"></script>
-      	 <script src="main03.js"></script>
+      	 <script src="main04.js"></script>
          <script src="main02.js"></script>
       	 <script>
-             var titleBlinn = document.createElement( "h3");
-             titleBlinn.innerHTML = "Blinn Phong Reflection Shader";
-             document.body.appendChild( titleBlinn);
+             var titleCook = document.createElement( "h3");
+             titleCook.innerHTML = "Cook Torrance Shader";
+             document.body.appendChild( titleCook);
       	     main();
 
-             var titlePhong = document.createElement( "h3");
-             titlePhong.innerHTML = "Phong Reflection Shader";
-             document.body.appendChild( titlePhong);
-             main2();
+             // var titlePhong = document.createElement( "h3");
+             // titlePhong.innerHTML = "Phong Reflection Shader";
+             // document.body.appendChild( titlePhong);
+             // main2();
 
       	 </script>
     </body>
