@@ -52,7 +52,6 @@ function main()
       fragmentShader: loadShaderFromDom( "toon.frag"),
       uniforms: {
         inputPosition: { type: 'v3', value: light.position },
-        tonesCount:{ type: 'float' , value: 5}
       }
     });
 
