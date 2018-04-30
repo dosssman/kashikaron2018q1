@@ -34,24 +34,22 @@ function main()
     scene.add( camera );
 
     var light = new THREE.PointLight();
-    light.position.set( 5, 5, 5);
+    light.position.set( 5, 5, 5 );
     scene.add( light );
 
-    var renderer = new THREE.WebGLRenderer( { alpha: true });
+    var renderer = new THREE.WebGLRenderer();
     renderer.setSize( width, height );
-    renderer.setClearColor( 0xffffff, 0);
     document.body.appendChild( renderer.domElement );
 
     var geometry = new THREE.TorusKnotGeometry( 1, 0.3, 100, 20 );
-    // var geometry = new THREE.SphereGeometry( 1, 32, 32, 1.0);
-    // var material = new THREE.MeshToonMaterial();
+    // var material = new THREE.MeshLambertMaterial();
 
     var material = new THREE.ShaderMaterial({
       vertexColors: THREE.VertexColors,
-      vertexShader: loadShaderFromDom( "toon.vert"),
-      fragmentShader: loadShaderFromDom( "toon.frag"),
+      vertexShader: loadShaderFromDom( "blinn_phong.vert"),
+      fragmentShader: loadShaderFromDom( "phong.frag"),
       uniforms: {
-        inputPosition: { type: 'v3', value: light.position },
+        inputPosition: { type: 'v3', value: light.position }
       }
     });
 
