@@ -24,18 +24,21 @@ function main()
     var vertices = [
         [ -1,  1, 0 ], // 0
         [ -1, -1, 0 ], // 1
-        [  1, -1, 0 ]  // 2
+        [  1, -1, 0 ],  // 2
+        [  1 , 1, 0 ]   // 3
     ];
 
     var faces = [
         [ 0, 1, 2 ], // f0
+        [ 0, 2, 3 ], // f0
     ];
 
     //Editing scalar
     var scalars = [
         .1,   // S0
-        .2, // S1
-        .8  // S2
+        .2,   // S1
+        .8,   // S2
+        .5    //S3
     ];
 
     // Create color map
@@ -43,9 +46,10 @@ function main()
     for ( var i = 0; i < 256; i++ )
     {
         var S = i / 255.0; // [0,1]
-        var R = Math.max( Math.cos( ( S - 1.0 ) * Math.PI ), 0.0 );
-        var G = Math.max( Math.cos( ( S - 0.5 ) * Math.PI ), 0.0 );
-        var B = Math.max( Math.cos( S * Math.PI ), 0.0 );
+        var R = 1.0; //Math.max( Math.cos( ( S - 1.0 ) * Math.PI ), 0.0 );
+        //Find more spanning function over Green and Blue
+        var G = Math.max( Math.cos( ( S ) * Math.PI ), 0.0 );
+        var B = Math.max( Math.cos( ( S ) * Math.PI ), 0.0 );
         var color = new THREE.Color( R, G, B );
         cmap.push( [ S, '0x' + color.getHexString() ] );
     }
@@ -75,6 +79,7 @@ function main()
         corresp = 255;
       }
 
+      //If NaN then input param is not normalized
       return corresp;
     }
 
