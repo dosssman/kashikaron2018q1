@@ -83,11 +83,6 @@ function main()
       return corresp;
     }
 
-
-    for( var i = 0; i < scalars.length; i++) {
-      console.log( cmap_index( scalars[i]));
-    }
-
     // Draw color map
     var lut = new THREE.Lut( 'rainbow', cmap.length );
     lut.addColorMap( 'mycolormap', cmap );
@@ -97,7 +92,6 @@ function main()
         'position': { 'x': 0.6, 'y': -1.1, 'z': 2 },
         'dimensions': { 'width': 0.15, 'height': 1.2 }
         //Width and height are permuted though ...
-
     } ) );
 
     var geometry = new THREE.Geometry();
