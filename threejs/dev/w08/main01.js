@@ -126,6 +126,8 @@ function main()
         geometry.faces[i].vertexColors.push( C2 );
     }
 
+    // console.log( geometry);
+
     var triangle = new THREE.Mesh( geometry, material );
     scene.add( triangle );
 
