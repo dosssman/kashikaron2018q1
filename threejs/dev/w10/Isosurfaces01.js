@@ -61,8 +61,6 @@ function Isosurfaces( volume, isovalue )
         cell_index += volume.resolution.x;
     }
 
-    geometry.computeVertexNormals();
-
     //Task 1
     // Create color map
     var cmap = [];
@@ -97,8 +95,8 @@ function Isosurfaces( volume, isovalue )
     // Affect color from cmap to each faces
     material.vertexColors = THREE.VertexColors;
 
-    //Distribute the colors depending on the index of the face,
-    //because I am lazy
+    //Distribute the colors depending on the index of the face
+    // because I am lazy
     for ( var i = 0; i < geometry.faces.length; i++ )
     {
         var C0 = new THREE.Color().setHex( cmap[ cmap_index( i) ][1] );
@@ -108,6 +106,9 @@ function Isosurfaces( volume, isovalue )
         geometry.faces[i].vertexColors.push( C1 );
         geometry.faces[i].vertexColors.push( C2 );
     }
+
+    geometry.computeVertexNormals();
+
     return new THREE.Mesh( geometry, material );
 
 
