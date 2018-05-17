@@ -2,7 +2,6 @@ function Isosurfaces( volume, isovalue )
 {
     var geometry = new THREE.Geometry();
     var material = new THREE.MeshLambertMaterial();
-    // var material = new THREE.MeshBasicMaterial();
 
     var smin = volume.min_value;
     var smax = volume.max_value;
@@ -65,7 +64,52 @@ function Isosurfaces( volume, isovalue )
 
     geometry.computeVertexNormals();
 
-    material.color = new THREE.Color( "pink" );
+    // material.color = new THREE.Color( "pink" );
+    var cmap = [];
+    for ( var i = 0; i < 256; i++ )
+    {
+        var S = i / 255.0; // [0,1]
+        // The red component is fixed
+        var R = 1.0; //Math.max( Math.cos( ( S - 1.0 ) * Math.PI ), 0.0 );
+        //Green and Blue components decrease following cos( S - PI/2)
+        var G = Math.max( Math.cos( ( S ) * Math.PI / 2), 0.0 );
+        var B = Math.max( Math.cos( ( S ) * Math.PI / 2), 0.0 );
+        var color = new THREE.Color( R, G, B );
+        cmap.push( [ S, '0x' + color.getHexString() ] );
+    }
+
+    function cmap_index( new_domain_color) {
+
+      var normalized_color = new_domain_color / geometry.faces.length * 1.;
+      var corresp = NaN;
+
+      for( var i = 0; i < 254; i++) {
+        if( cmap[i][0] <= normalized_color && cmap[i+1][0] > normalized_color) {
+            corresp = i;
+            break;
+        }
+        //If reached without finding, it's probably the last one ... probably
+        corresp = 255;
+      }
+
+      return corresp;
+    }
+
+    // material.color = new THREE.Color( "cyan" );
+    // Affect color from cmap to each faces
+    material.vertexColors = THREE.VertexColors;
+
+    //Distribute the colors depending on the index of the face
+    // because I am lazy
+    for ( var i = 0; i < geometry.faces.length; i++ )
+    {
+        var C0 = new THREE.Color().setHex( cmap[ cmap_index( i) ][1] );
+        var C1 = new THREE.Color().setHex( cmap[ cmap_index( i) ][1] );
+        var C2 = new THREE.Color().setHex( cmap[ cmap_index( i) ][1] );
+        geometry.faces[i].vertexColors.push( C0 );
+        geometry.faces[i].vertexColors.push( C1 );
+        geometry.faces[i].vertexColors.push( C2 );
+    }
 
     return new THREE.Mesh( geometry, material );
 

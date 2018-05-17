@@ -1,8 +1,7 @@
 function Isosurfaces( volume, isovalue )
 {
     var geometry = new THREE.Geometry();
-    // var material = new THREE.MeshLambertMaterial();
-    var material = new THREE.MeshBasicMaterial();
+    var material = new THREE.MeshLambertMaterial();
 
     var smin = volume.min_value;
     var smax = volume.max_value;
@@ -74,6 +73,19 @@ function Isosurfaces( volume, isovalue )
         cmap.push( [ S, '0x' + color.getHexString() ] );
     }
 
+    var cmap = [];
+    for ( var i = 0; i < 256; i++ )
+    {
+        var S = i / 255.0; // [0,1]
+        // The red component is fixed
+        var R = 1.0; //Math.max( Math.cos( ( S - 1.0 ) * Math.PI ), 0.0 );
+        //Green and Blue components decrease following cos( S - PI/2)
+        var G = Math.max( Math.cos( ( S ) * Math.PI / 2), 0.0 );
+        var B = Math.max( Math.cos( ( S ) * Math.PI / 2), 0.0 );
+        var color = new THREE.Color( R, G, B );
+        cmap.push( [ S, '0x' + color.getHexString() ] );
+    }
+    
     function cmap_index( new_domain_color) {
 
       var normalized_color = new_domain_color / geometry.faces.length * 1.;
