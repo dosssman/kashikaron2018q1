@@ -97,7 +97,8 @@ function Isosurfaces( volume, isovalue )
     // Affect color from cmap to each faces
     material.vertexColors = THREE.VertexColors;
 
-    //Distribute the colors depending on the index of the face
+    //Distribute the colors depending on the index of the face,
+    //because I am lazy
     for ( var i = 0; i < geometry.faces.length; i++ )
     {
         var C0 = new THREE.Color().setHex( cmap[ cmap_index( i) ][1] );

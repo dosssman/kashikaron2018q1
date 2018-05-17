@@ -1,14 +1,14 @@
 <html>
     <head>
 	       <title>W06: Task 04 Cook Torrance Try</title>
-           <script type="x-shader/x-vertex" id="cook_torrance.vert">
+           <!--  Gouraud Shader-->
+           <script type="x-shader/x-vertex" id="gouraud.vert">
                varying vec3 point_color;
                varying vec3 normal_vector;
                varying vec4 point_position;
                uniform vec3 light_position;
 
-               vec3 CookTorranceReflection( vec3 C, vec3 L, vec3 N )
-                 {
+               vec3 CookTorranceReflection( vec3 C, vec3 L, vec3 N ) {
                      float PI = 3.14159265;
                      float ka = 0.3;
                      float kd = 0.5;
@@ -72,14 +72,36 @@
                    gl_Position = projectionMatrix * point_position;
                }
            </script>
+           <script type="x-shader/x-fragment" id="gouraud.frag">
+               varying vec3 point_color;
 
+               void main() {
+                   gl_FragColor = vec4( point_color, 1.0);
+               }
+           </script>
+
+           <!--  Phong Shader -->
            <script type="x-shader/x-vertex" id="phong.vert">
                varying vec3 point_color;
                varying vec4 point_position;
                varying vec3 normal_vector;
                uniform vec3 light_position;
 
-               vec3 PhongReflection( vec3 C, vec3 L, vec3 N )
+               void main()
+               {
+                   point_position = modelViewMatrix * vec4( position, 1.0 );
+                   normal_vector = normalMatrix * normal;
+                   point_color =  color;
+                   gl_Position = projectionMatrix * point_position;
+               }
+           </script>
+           <script type="x-shader/x-fragment" id="phong.frag">
+               varying vec3 point_color;
+               varying vec4 point_position;
+               varying vec3 normal_vector;
+               uniform vec3 light_position;
+
+               vec3 CookTorranceReflection( vec3 C, vec3 L, vec3 N )
                  {
                      float ka = 0.3;
                      float kd = 0.5;
@@ -92,43 +114,25 @@
                      float Ia = ka;
                      float Id = kd * dd;
                      float Is = ks * ds;
+
                      return C * ( Ia + Id + Is );
                  }
 
-               void main()
-               {
-                   point_position = modelViewMatrix * vec4( position, 1.0 );
-                   normal_vector = normalMatrix * normal;
-                   vec3 C = color;
+               void main() {
+                   vec3 C = point_color;
                    vec3 L = normalize( light_position - point_position.xyz );
                    vec3 N = normalize( normal_vector );
-                   point_color = PhongReflection( C, L, N );
-                   gl_Position = projectionMatrix * point_position;
-               }
-           </script>
-           <script type="x-shader/x-fragment" id="phong.frag">
-               varying vec3 point_color;
-
-               void main() {
-                   gl_FragColor = vec4( point_color, 1.0);
+                   vec3 final_color = CookTorranceReflection( C, L, N );
+                   gl_FragColor = vec4( final_color, 1.0);
                }
            </script>
     </head>
     <body>
+         <script src="common.js"></script>
 	     <script src="https://threejs.org/build/three.min.js"></script>
       	 <script src="main04.js"></script>
-         <script src="main02.js"></script>
       	 <script>
-             var titleCook = document.createElement( "h3");
-             titleCook.innerHTML = "Cook Torrance Shader";
-             document.body.appendChild( titleCook);
-      	     main();
-
-             // var titlePhong = document.createElement( "h3");
-             // titlePhong.innerHTML = "Phong Reflection Shader";
-             // document.body.appendChild( titlePhong);
-             // main2();
-
+      	     main04();
       	 </script>
     </body>
 </html>

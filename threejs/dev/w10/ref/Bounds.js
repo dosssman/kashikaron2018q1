@@ -33,7 +33,7 @@ function Bounds( volume )
     geometry.vertices.push( v2 ); geometry.vertices.push( v6 );
     geometry.vertices.push( v3 ); geometry.vertices.push( v7 );
 
-    material.linewidth = 2;
+    material.linewidth = 1;
     material.color = new THREE.Color( "black" );
 
     return new THREE.Line( geometry, material, THREE.LinePieces );
