@@ -1,23 +1,7 @@
-function Isosurfaces( volume, isovalue, light_position )
+function Isosurfaces( volume, isovalue )
 {
     var geometry = new THREE.Geometry();
-
-    //Custom Shader material for Shader Implementation
-    var material = new THREE.ShaderMaterial({
-      vertexColors: THREE.VertexColors,
-      // Blinn Phong Reflection shader load
-      // vertexShader: loadShaderFromDom( "blinnphong_phong.vert"),
-      // fragmentShader: loadShaderFromDom( "blinnphong_phong.frag"),
-      // Cook Torance shader load
-      vertexShader: loadShaderFromDom( "cooktorrance_phong.vert"),
-      fragmentShader: loadShaderFromDom( "cooktorrance_phong.frag"),
-      // Blinn Phong Reflection shader load
-      // vertexShader: loadShaderFromDom( "toon_phong.vert"),
-      // fragmentShader: loadShaderFromDom( "toon_phong.frag"),
-      uniforms: {
-        light_position: { type: 'v3', value: light_position }
-      }
-    });
+    var material = new THREE.MeshLambertMaterial();
 
     var smin = volume.min_value;
     var smax = volume.max_value;
@@ -80,8 +64,7 @@ function Isosurfaces( volume, isovalue, light_position )
 
     geometry.computeVertexNormals();
 
-    // Create color map
-    // WHITE_RED Range Color Map
+    // material.color = new THREE.Color( "pink" );
     var cmap = [];
     for ( var i = 0; i < 256; i++ )
     {
@@ -111,10 +94,13 @@ function Isosurfaces( volume, isovalue, light_position )
 
       return corresp;
     }
-    // material.color = new THREE.Color( "white" );
 
-    //Distribute the colors depending on the index of the face,
-    //because I am lazy
+    // material.color = new THREE.Color( "cyan" );
+    // Affect color from cmap to each faces
+    material.vertexColors = THREE.VertexColors;
+
+    //Distribute the colors depending on the index of the face
+    // because I am lazy
     for ( var i = 0; i < geometry.faces.length; i++ )
     {
         var C0 = new THREE.Color().setHex( cmap[ cmap_index( i) ][1] );
@@ -124,6 +110,7 @@ function Isosurfaces( volume, isovalue, light_position )
         geometry.faces[i].vertexColors.push( C1 );
         geometry.faces[i].vertexColors.push( C2 );
     }
+
     return new THREE.Mesh( geometry, material );
 
     function cell_node_indices( cell_index )

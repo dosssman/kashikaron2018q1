@@ -44,6 +44,7 @@ function Isosurfaces( volume, isovalue, light_position )
                     var eid0 = lut.edgeID[index][j];
                     var eid1 = lut.edgeID[index][j+2];
                     var eid2 = lut.edgeID[index][j+1];
+                    var eid3 = lut.edgeID[index][j+3];
 
                     var vid0 = lut.vertexID[eid0][0];
                     var vid1 = lut.vertexID[eid0][1];
@@ -70,6 +71,7 @@ function Isosurfaces( volume, isovalue, light_position )
                     var id0 = counter++;
                     var id1 = counter++;
                     var id2 = counter++;
+
                     geometry.faces.push( new THREE.Face3( id0, id1, id2 ) );
                 }
             }
