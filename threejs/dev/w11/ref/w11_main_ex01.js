@@ -127,11 +127,11 @@ function main()
         enableAutoResize: false
     });
 
-//    screen.dynamicDampingFactor = 0.3;
-//    screen.trackball.rotatetSpeed = 1.0;
-//    screen.trackball.noPan = false;
-//    screen.trackball.noZoom = false;
-//    screen.renderer.setClearColor( new THREE.Color( "black" ) );
+  //  screen.dynamicDampingFactor = 0.3;
+  //  screen.trackball.rotatetSpeed = 1.0;
+  //  screen.trackball.noPan = false;
+  //  screen.trackball.noZoom = false;
+   screen.renderer.setClearColor( new THREE.Color( "black" ) );
 
     var exit_buffer = new THREE.Scene();
     var exit_texture = new THREE.WebGLRenderTarget(
