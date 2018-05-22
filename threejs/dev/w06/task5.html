@@ -1,7 +1,8 @@
  <html>
     <head>
        <title>W06: Task 05 Toon Shader Try</title>
-       <script type="x-shader/x-vertex" id="toon.vert">
+       <!-- Gouraud -->
+       <script type="x-shader/x-vertex" id="gouraud.vert">
            varying vec4 point_position;
            varying vec3 normal_vector;
            uniform vec3 light_position;
@@ -10,64 +11,184 @@
            void main() {
                normal_vector = normalMatrix * normal;
                point_position = modelViewMatrix * vec4( position, 1.0 );
-               //Passing color to Frag Shader
-               point_color = color;
+
+                 vec3 L = normalize( light_position - point_position.xyz );
+                 vec3 N = normalize( normal_vector );
+
+                 //Lambertian Reflection model based Toon Shader
+                 // Challenge Draw outline to black
+
+                 //Ambiant Term
+                 float Ia = 0.4;
+
+                 //Diffuse Term
+                 float kd = 0.6;
+                 float dd = max( dot( N, L ), 0.0 );
+                 float Id = kd * dd;
+
+                 //UPgrade to Blinn Phong Shader
+                 float ks = 0.8;
+                 float n = 50.0;
+                 vec3 R = reflect( -L, N );
+                 float ds = pow( max( dot( R, N ), 0.0 ), n );
+                 if ( dd <= 0.0 ) { ds = 0.0; }
+                 float Is = ks * ds;
+
+                 //Combined reflection term
+                 float If = Ia + Id + Is;
+
+                 point_color = color;
+
+                 if( If > .97)
+                      point_color *= 1.0;
+                  else if ( If > .82)
+                      point_color *= .75;
+                  else if ( If > .45)
+                      point_color *= .50;
+                  else if ( If > .30)
+                      point_color *= .30;
+                  else
+                      point_color *= .125;
+
                gl_Position = projectionMatrix * point_position;
            }
        </script>
-
-      <script type="x-shader/x-fragment" id="toon.frag">
-          //Cell Shading requires the comp to be done in frag. instead
-          // of vert., or so it seems
+       <script type="x-shader/x-fragment" id="gouraud.frag">
           varying vec3 point_color;
+
+          void main() {
+              gl_FragColor = vec4( point_color, 1.0);
+          }
+       </script>
+
+      <!-- Phong -->
+      <script type="x-shader/x-vertex" id="phong.vert">
           varying vec4 point_position;
           varying vec3 normal_vector;
           uniform vec3 light_position;
+          varying vec3 point_color;
 
           void main() {
-
-              vec3 L = normalize( light_position - point_position.xyz );
-              vec3 N = normalize( normal_vector );
-
-              //Lambertian based Toon
-
-              //Ambiant Term
-              float Ia = 0.4;
-
-              //Diffuse Term
-              float kd = 0.6;
-              float dd = max( dot( N, L ), 0.0 );
-              float Id = kd * dd;
-
-              //Combined reflection term
-              float If = Ia + Id;
-
-              vec3 base_color = point_color;
-
-              if( If > .97)
-                   base_color *= 1.0;
-               else if ( If > .82)
-                   base_color *= .75;
-               else if ( If > .45)
-                   base_color *= .50;
-               else if ( If > .30)
-                   base_color *= .30;
-               else
-                   base_color *= .125;
-
-              gl_FragColor = vec4( base_color, 1.0);
+              normal_vector = normalMatrix * normal;
+              point_position = modelViewMatrix * vec4( position, 1.0 );
+              //Passing color to Frag Shader
+              point_color = color;
+              gl_Position = projectionMatrix * point_position;
           }
       </script>
+      <script type="x-shader/x-fragment" id="phong.frag">
+         varying vec3 point_color;
+         varying vec4 point_position;
+         varying vec3 normal_vector;
+         uniform vec3 light_position;
+
+         void main() {
+
+             vec3 L = normalize( light_position - point_position.xyz );
+             vec3 N = normalize( normal_vector );
+
+             //Lambertian based Toon
+
+             //Ambiant Term
+             float Ia = 0.4;
+
+             //Diffuse Term
+             float kd = 0.6;
+             float dd = max( dot( N, L ), 0.0 );
+             float Id = kd * dd;
+
+             //UPgrade to Blinn Phong Shader
+             float ks = 0.8;
+             float n = 50.0;
+             vec3 R = reflect( -L, N );
+             float ds = pow( max( dot( R, N ), 0.0 ), n );
+             if ( dd <= 0.0 ) { ds = 0.0; }
+             float Is = ks * ds;
+
+             //Combined reflection term
+             float If = Ia + Id + Is;
+
+             vec3 base_color = point_color;
+
+             if( If > .98)
+                  base_color *= 1.0;
+              else if ( If > .82)
+                  base_color *= .75;
+              else if ( If > .45)
+                  base_color *= .50;
+              else if ( If > .30)
+                  base_color *= .30;
+              else
+                  base_color *= .125;
+
+             gl_FragColor = vec4( base_color, 1.0);
+         }
+     </script>
+
+     <!-- Phong Backup -->
+     <!-- <script type="x-shader/x-vertex" id="phong.vert">
+         varying vec4 point_position;
+         varying vec3 normal_vector;
+         uniform vec3 light_position;
+         varying vec3 point_color;
+
+         void main() {
+             normal_vector = normalMatrix * normal;
+             point_position = modelViewMatrix * vec4( position, 1.0 );
+             //Passing color to Frag Shader
+             point_color = color;
+             gl_Position = projectionMatrix * point_position;
+         }
+     </script>
+     <script type="x-shader/x-fragment" id="phong.frag">
+        varying vec3 point_color;
+        varying vec4 point_position;
+        varying vec3 normal_vector;
+        uniform vec3 light_position;
+
+        void main() {
+
+            vec3 L = normalize( light_position - point_position.xyz );
+            vec3 N = normalize( normal_vector );
+
+            //Lambertian based Toon
+
+            //Ambiant Term
+            float Ia = 0.4;
+
+            //Diffuse Term
+            float kd = 0.6;
+            float dd = max( dot( N, L ), 0.0 );
+            float Id = kd * dd;
+
+            //Combined reflection term
+            float If = Ia + Id;
+
+            vec3 base_color = point_color;
+
+            if( If > .97)
+                 base_color *= 1.0;
+             else if ( If > .82)
+                 base_color *= .75;
+             else if ( If > .45)
+                 base_color *= .50;
+             else if ( If > .30)
+                 base_color *= .30;
+             else
+                 base_color *= .125;
+
+            gl_FragColor = vec4( base_color, 1.0);
+        }
+     </script> -->
+
     </head>
 
     <body>
+        <script src="common.js"></script>
 	    <script src="https://threejs.org/build/three.min.js"></script>
       	<script src="main05.js"></script>
       	<script>
-            var toonShader = document.createElement( "h3");
-            toonShader.innerHTML = "Toon Shader";
-            document.body.appendChild( toonShader);
-      	    main();
+      	    main05();
       	</script>
     </body>
 </html>

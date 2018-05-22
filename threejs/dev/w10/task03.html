@@ -1,0 +1,179 @@
+<html>
+    <head>
+	    <title>W10: Task 03</title>
+        <!--  Phong Shaders from W06-->
+
+        <!--  BlinnPhong Reflection Model -->
+        <script type="x-shader/x-vertex" id="blinnphong_phong.vert">
+            varying vec3 point_color;
+            varying vec4 point_position;
+            varying vec3 normal_vector;
+            uniform vec3 light_position;
+
+            void main()
+            {
+                point_position = modelViewMatrix * vec4( position, 1.0 );
+                normal_vector = normalMatrix * normal;
+                point_color = color;
+                gl_Position = projectionMatrix * point_position;
+            }
+        </script>
+        <script type="x-shader/x-fragment" id="blinnphong_phong.frag">
+         varying vec3 point_color;
+         varying vec4 point_position;
+         varying vec3 normal_vector;
+         uniform vec3 light_position;
+
+         vec3 BlinnPhongReflection( vec3 C, vec3 L, vec3 N ) {
+             float ka = 0.3;
+             float kd = 0.5;
+             float ks = 0.8;
+             float n = 50.0;
+             vec3 R = reflect( -L, N );
+             float dd = max( dot( N, L ), 0.0 );
+             float ds = pow( max( dot( R, N ), 0.0 ), n );
+             if ( dd <= 0.0 ) { ds = 0.0; }
+             float Ia = ka;
+             float Id = kd * dd;
+             float Is = ks * ds;
+
+             return C * ( Ia + Id + Is );
+         }
+
+         void main() {
+             vec3 C = point_color;
+             vec3 L = normalize( light_position - point_position.xyz );
+             vec3 N = normalize( normal_vector );
+             vec3 final_color = BlinnPhongReflection( C, L, N );
+             gl_FragColor = vec4( final_color, 1.0);
+         }
+        </script>
+
+        <!--  Cook Torrance Reflection Model -->
+        <script type="x-shader/x-vertex" id="cooktorrance_phong.vert">
+            varying vec3 point_color;
+            varying vec4 point_position;
+            varying vec3 normal_vector;
+            uniform vec3 light_position;
+
+            void main()
+            {
+                point_position = modelViewMatrix * vec4( position, 1.0 );
+                normal_vector = normalMatrix * normal;
+                point_color =  color;
+                gl_Position = projectionMatrix * point_position;
+            }
+        </script>
+        <script type="x-shader/x-fragment" id="cooktorrance_phong.frag">
+            varying vec3 point_color;
+            varying vec4 point_position;
+            varying vec3 normal_vector;
+            uniform vec3 light_position;
+
+            vec3 CookTorranceReflection( vec3 C, vec3 L, vec3 N )
+              {
+                  float ka = 0.3;
+                  float kd = 0.5;
+                  float ks = 0.8;
+                  float n = 50.0;
+                  vec3 R = reflect( -L, N );
+                  float dd = max( dot( N, L ), 0.0 );
+                  float ds = pow( max( dot( R, N ), 0.0 ), n );
+                  if ( dd <= 0.0 ) { ds = 0.0; }
+                  float Ia = ka;
+                  float Id = kd * dd;
+                  float Is = ks * ds;
+
+                  return C * ( Ia + Id + Is );
+              }
+
+            void main() {
+                vec3 C = point_color;
+                vec3 L = normalize( light_position - point_position.xyz );
+                vec3 N = normalize( normal_vector );
+                vec3 final_color = CookTorranceReflection( C, L, N );
+                gl_FragColor = vec4( final_color, 1.0);
+            }
+        </script>
+
+        <!--  Toon Reflection Model -->
+        <script type="x-shader/x-vertex" id="toon_phong.vert">
+            varying vec4 point_position;
+            varying vec3 normal_vector;
+            uniform vec3 light_position;
+            varying vec3 point_color;
+
+            void main() {
+                normal_vector = normalMatrix * normal;
+                point_position = modelViewMatrix * vec4( position, 1.0 );
+                //Passing color to Frag Shader
+                point_color = color;
+                gl_Position = projectionMatrix * point_position;
+            }
+        </script>
+        <script type="x-shader/x-fragment" id="toon_phong.frag">
+           varying vec3 point_color;
+           varying vec4 point_position;
+           varying vec3 normal_vector;
+           uniform vec3 light_position;
+
+           void main() {
+
+               vec3 L = normalize( light_position - point_position.xyz );
+               vec3 N = normalize( normal_vector );
+
+               //Lambertian based Toon
+
+               //Ambiant Term
+               float Ia = 0.4;
+
+               //Diffuse Term
+               float kd = 0.6;
+               float dd = max( dot( N, L ), 0.0 );
+               float Id = kd * dd;
+
+               //UPgrade to Blinn Phong Shader
+               float ks = 0.8;
+               float n = 50.0;
+               vec3 R = reflect( -L, N );
+               float ds = pow( max( dot( R, N ), 0.0 ), n );
+               if ( dd <= 0.0 ) { ds = 0.0; }
+               float Is = ks * ds;
+
+               //Combined reflection term
+               float If = Ia + Id + Is;
+
+               vec3 base_color = point_color;
+
+               if( If > .98)
+                    base_color *= 1.0;
+                else if ( If > .82)
+                    base_color *= .75;
+                else if ( If > .45)
+                    base_color *= .50;
+                else if ( If > .30)
+                    base_color *= .30;
+                else
+                    base_color *= .125;
+
+               gl_FragColor = vec4( base_color, 1.0);
+           }
+        </script>
+
+        <!--  Phong Shaders from W06 End-->
+    </head>
+    <body style="margin:0">
+	<script src="ref/three.min.js"></script>
+	<script src="ref/TrackballControls.js"></script>
+	<script src="http://threejs.org/examples/js/math/Lut.js"></script>
+	<script src="http://naohisas.github.io/KVS.js/Build/KVS.min.js"></script>
+	<script src="http://naohisas.github.io/KVS.js/Build/KVS2THREE.min.js"></script>
+	<script src="http://naohisas.github.io/KVS.js/Source/KVSLobsterData.js"></script>
+	<script src="ref/Bounds.js"></script>
+	<script src="Isosurfaces03.js"></script>
+	<script src="main03.js"></script>
+	<script>
+	 main();
+	</script>
+    </body>
+</html>

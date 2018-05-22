@@ -1,7 +1,23 @@
-function Isosurfaces( volume, isovalue )
+function Isosurfaces( volume, isovalue, light_position )
 {
     var geometry = new THREE.Geometry();
-    var material = new THREE.MeshLambertMaterial();
+
+    //Custom Shader material for Shader Implementation
+    var material = new THREE.ShaderMaterial({
+      vertexColors: THREE.VertexColors,
+      // Blinn Phong Reflection shader load
+      // vertexShader: loadShaderFromDom( "blinnphong_phong.vert"),
+      // fragmentShader: loadShaderFromDom( "blinnphong_phong.frag"),
+      // Cook Torance shader load
+      vertexShader: loadShaderFromDom( "cooktorrance_phong.vert"),
+      fragmentShader: loadShaderFromDom( "cooktorrance_phong.frag"),
+      // Blinn Phong Reflection shader load
+      // vertexShader: loadShaderFromDom( "toon_phong.vert"),
+      // fragmentShader: loadShaderFromDom( "toon_phong.frag"),
+      uniforms: {
+        light_position: { type: 'v3', value: light_position }
+      }
+    });
 
     var smin = volume.min_value;
     var smax = volume.max_value;
@@ -10,7 +26,9 @@ function Isosurfaces( volume, isovalue )
     var lut = new KVS.MarchingCubesTable();
     var cell_index = 0;
     var counter = 0;
-    for ( var z = 0; z < volume.resolution.z - 1; z++ )
+    // Extracting cube surface: are those triangles ?
+    // Good question ...
+    for ( var z = 0; z < volume.resolution.z - 1 ; z++ )
     {
         for ( var y = 0; y < volume.resolution.y - 1; y++ )
         {
@@ -26,6 +44,7 @@ function Isosurfaces( volume, isovalue )
                     var eid0 = lut.edgeID[index][j];
                     var eid1 = lut.edgeID[index][j+2];
                     var eid2 = lut.edgeID[index][j+1];
+                    var eid3 = lut.edgeID[index][j+3];
 
                     var vid0 = lut.vertexID[eid0][0];
                     var vid1 = lut.vertexID[eid0][1];
@@ -52,6 +71,7 @@ function Isosurfaces( volume, isovalue )
                     var id0 = counter++;
                     var id1 = counter++;
                     var id2 = counter++;
+
                     geometry.faces.push( new THREE.Face3( id0, id1, id2 ) );
                 }
             }
@@ -60,19 +80,10 @@ function Isosurfaces( volume, isovalue )
         cell_index += volume.resolution.x;
     }
 
-    //Task 1
-    // Create color map
-    var cmap = [];
-    for ( var i = 0; i < 256; i++ )
-    {
-        var S = i / 255.0; // [0,1]
-        var R = Math.max( Math.cos( ( S - 1.0 ) * Math.PI ), 0.0 );
-        var G = Math.max( Math.cos( ( S - 0.5 ) * Math.PI ), 0.0 );
-        var B = Math.max( Math.cos( S * Math.PI ), 0.0 );
-        var color = new THREE.Color( R, G, B );
-        cmap.push( [ S, '0x' + color.getHexString() ] );
-    }
+    geometry.computeVertexNormals();
 
+    // Create color map
+    // WHITE_RED Range Color Map
     var cmap = [];
     for ( var i = 0; i < 256; i++ )
     {
@@ -85,7 +96,7 @@ function Isosurfaces( volume, isovalue )
         var color = new THREE.Color( R, G, B );
         cmap.push( [ S, '0x' + color.getHexString() ] );
     }
-    
+
     function cmap_index( new_domain_color) {
 
       var normalized_color = new_domain_color / geometry.faces.length * 1.;
@@ -102,13 +113,10 @@ function Isosurfaces( volume, isovalue )
 
       return corresp;
     }
+    // material.color = new THREE.Color( "white" );
 
-    // material.color = new THREE.Color( "cyan" );
-    // Affect color from cmap to each faces
-    material.vertexColors = THREE.VertexColors;
-
-    //Distribute the colors depending on the index of the face
-    // because I am lazy
+    //Distribute the colors depending on the index of the face,
+    //because I am lazy
     for ( var i = 0; i < geometry.faces.length; i++ )
     {
         var C0 = new THREE.Color().setHex( cmap[ cmap_index( i) ][1] );
@@ -118,11 +126,7 @@ function Isosurfaces( volume, isovalue )
         geometry.faces[i].vertexColors.push( C1 );
         geometry.faces[i].vertexColors.push( C2 );
     }
-
-    geometry.computeVertexNormals();
-
     return new THREE.Mesh( geometry, material );
-
 
     function cell_node_indices( cell_index )
     {
@@ -167,6 +171,20 @@ function Isosurfaces( volume, isovalue )
 
     function interpolated_vertex( v0, v1, s )
     {
-        return new THREE.Vector3().addVectors( v0, v1 ).divideScalar( 2 );
+      //Isovalie seems to aleasy be 128
+      //Read values of the two edges from the volume data
+      //Understanding of the Volume data set label
+      // volume.values is a one dimensional array in the sense that every edge's isovalue is stored in a 0 dimensionnal array
+      // For an arbitrary edge of coodinate Va, the index is obtained by offset it's x component by 0, its y component by
+      // the resolution of x and its z component by the product of resolution of x and y respectively.
+      s0 = volume.values[ v0.x + v0.y * volume.resolution.x + v0.z * volume.resolution.x * volume.resolution.y][0];
+      s1 = volume.values[ v1.x + v1.y * volume.resolution.x + v1.z * volume.resolution.x * volume.resolution.y][0];
+
+      //Interpolate the isovalue betweenthe two edges
+      //Spiky lobster
+      //p = (2 * s - (s0 + s1))/ ( s1-s0);
+      p = (s - s0)/ ( s1 - s0);
+
+      return new THREE.Vector3().addVectors( v0.multiplyScalar( 1-p), v1.multiplyScalar( p));
     }
 }
