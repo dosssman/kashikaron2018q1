@@ -9,11 +9,11 @@ function Isosurfaces( volume, isovalue, light_position )
       // vertexShader: loadShaderFromDom( "blinnphong_phong.vert"),
       // fragmentShader: loadShaderFromDom( "blinnphong_phong.frag"),
       // Cook Torance shader load
-      vertexShader: loadShaderFromDom( "cooktorrance_phong.vert"),
-      fragmentShader: loadShaderFromDom( "cooktorrance_phong.frag"),
+      // vertexShader: loadShaderFromDom( "cooktorrance_phong.vert"),
+      // fragmentShader: loadShaderFromDom( "cooktorrance_phong.frag"),
       // Blinn Phong Reflection shader load
-      // vertexShader: loadShaderFromDom( "toon_phong.vert"),
-      // fragmentShader: loadShaderFromDom( "toon_phong.frag"),
+      vertexShader: loadShaderFromDom( "toon_phong.vert"),
+      fragmentShader: loadShaderFromDom( "toon_phong.frag"),
       uniforms: {
         light_position: { type: 'v3', value: light_position }
       }

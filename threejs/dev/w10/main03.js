@@ -22,13 +22,12 @@ function main()
     var volume = new KVS.LobsterData();
     var screen = new KVS.THREEScreen();
 
-    console.log( screen);
     screen.init( volume, {
         width: window.innerWidth,
         height: window.innerHeight,
         enableAutoResize: false
     });
-
+    
     var bounds = Bounds( volume );
     screen.scene.add( bounds );
 

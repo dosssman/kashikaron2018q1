@@ -1,7 +1,55 @@
 <html>
     <head>
-	    <title>W10: Task 03</title>
+        <title>Final Task</title>
+        <!--  Phong Shaders from W06 End -->
+        <script type="text/javascript" src="datgui/dat.gui.min.js"></script>
         <!--  Phong Shaders from W06-->
+        <!-- Lambertian Reflection Model -->
+
+        <script type="x-shader/x-vertex" id="lambert.vert">
+            varying vec3 point_color;
+            varying vec4 point_position;
+            varying vec3 normal_vector;
+            uniform vec3 light_position;
+
+            void main()
+            {
+                point_position = modelViewMatrix * vec4( position, 1.0 );
+                normal_vector = normalMatrix * normal;
+                point_color = color;
+                gl_Position = projectionMatrix * point_position;
+            }
+        </script>
+        <script type="x-shader/x-fragment" id="lambert.frag">
+         varying vec3 point_color;
+         varying vec4 point_position;
+         varying vec3 normal_vector;
+         uniform vec3 light_position;
+         uniform float ambient_reflection;
+         uniform float diffuse_reflection;
+
+         vec3 LambertianReflection( vec3 C, vec3 L, vec3 N ) {
+             // float ka = 0.3;
+             // float kd = 0.5;
+             float ka = ambient_reflection;
+             float kd = diffuse_reflection;
+
+             vec3 R = reflect( -L, N );
+             float dd = max( dot( N, L ), 0.0 );
+             float Ia = ka;
+             float Id = kd * dd;
+
+             return C * ( Ia + Id );
+         }
+
+         void main() {
+             vec3 C = point_color;
+             vec3 L = normalize( light_position - point_position.xyz );
+             vec3 N = normalize( normal_vector );
+             vec3 final_color = LambertianReflection( C, L, N );
+             gl_FragColor = vec4( final_color, 1.0);
+         }
+        </script>
 
         <!--  BlinnPhong Reflection Model -->
         <script type="x-shader/x-vertex" id="blinnphong_phong.vert">
@@ -23,12 +71,16 @@
          varying vec4 point_position;
          varying vec3 normal_vector;
          uniform vec3 light_position;
+         uniform float ambient_reflection;
+         uniform float diffuse_reflection;
+         uniform float specular_reflection;
+         uniform float specular_power;
 
          vec3 BlinnPhongReflection( vec3 C, vec3 L, vec3 N ) {
-             float ka = 0.3;
-             float kd = 0.5;
-             float ks = 0.8;
-             float n = 50.0;
+             float ka = ambient_reflection;
+             float kd = diffuse_reflection;
+             float ks = specular_reflection;
+             float n = specular_power;
              vec3 R = reflect( -L, N );
              float dd = max( dot( N, L ), 0.0 );
              float ds = pow( max( dot( R, N ), 0.0 ), n );
@@ -69,16 +121,22 @@
             varying vec4 point_position;
             varying vec3 normal_vector;
             uniform vec3 light_position;
+            uniform float ambient_reflection;
+            uniform float diffuse_reflection;
+            uniform float specular_reflection;
+            uniform float specular_power;
+            uniform float u_roughness;
+            uniform float u_schlick;
 
             vec3 CookTorranceReflection( vec3 C, vec3 L, vec3 N ) {
                 float PI = 3.14159265;
-                float ka = 0.3;
-                float kd = 0.5;
-                float ks = 0.8;
-                float n = 50.0;
+                float ka = ambient_reflection;
+                float kd = diffuse_reflection;
+                float ks = specular_reflection;
+                float n = specular_power;
                 //Cook Torrance additional params
-                float roughness = .21;
-                float F0 = .975; // Schlik's appro; Refflection intensity of
+                float roughness = u_roughness;
+                float F0 = u_schlick; // Schlik's appro; Refflection intensity of
                 //light parallel to the normal;
 
                 //View Vector
@@ -150,6 +208,10 @@
            varying vec4 point_position;
            varying vec3 normal_vector;
            uniform vec3 light_position;
+           uniform float ambient_reflection;
+           uniform float diffuse_reflection;
+           uniform float specular_reflection;
+           uniform float specular_power;
 
            void main() {
 
@@ -159,16 +221,16 @@
                //Lambertian based Toon
 
                //Ambiant Term
-               float Ia = 0.4;
+               float Ia = ambient_reflection;
 
                //Diffuse Term
-               float kd = 0.6;
+               float kd = diffuse_reflection;
                float dd = max( dot( N, L ), 0.0 );
                float Id = kd * dd;
 
                //UPgrade to Blinn Phong Shader
-               float ks = 0.8;
-               float n = 50.0;
+               float ks = specular_reflection;
+               float n = specular_power;
                vec3 R = reflect( -L, N );
                float ds = pow( max( dot( R, N ), 0.0 ), n );
                if ( dd <= 0.0 ) { ds = 0.0; }
@@ -179,11 +241,11 @@
 
                vec3 base_color = point_color;
 
-               if( If > .98)
+               if( If > .90)
                     base_color *= 1.0;
-                else if ( If > .82)
+                else if ( If > .80)
                     base_color *= .75;
-                else if ( If > .45)
+                else if ( If > .30)
                     base_color *= .50;
                 else if ( If > .30)
                     base_color *= .30;
@@ -196,18 +258,15 @@
 
         <!--  Phong Shaders from W06 End-->
     </head>
-    <body style="margin:0">
-	<script src="ref/three.min.js"></script>
-	<script src="ref/TrackballControls.js"></script>
-	<script src="http://threejs.org/examples/js/math/Lut.js"></script>
-	<script src="http://naohisas.github.io/KVS.js/Build/KVS.min.js"></script>
-	<script src="http://naohisas.github.io/KVS.js/Build/KVS2THREE.min.js"></script>
-	<script src="http://naohisas.github.io/KVS.js/Source/KVSLobsterData.js"></script>
-	<script src="ref/Bounds.js"></script>
-	<script src="Isosurfaces03.js"></script>
-	<script src="main03.js"></script>
-	<script>
-	 main();
-	</script>
+    <body>
+    	<script src="three.min.js"></script>
+    	<script src="TrackballControls.js"></script>
+    	<script src="http://threejs.org/examples/js/math/Lut.js"></script>
+    	<script src="http://naohisas.github.io/KVS.js/Build/KVS.min.js"></script>
+    	<script src="http://naohisas.github.io/KVS.js/Build/KVS2THREE.min.js"></script>
+    	<script src="http://naohisas.github.io/KVS.js/Source/KVSLobsterData.js"></script>
+        <script src="stats.min.js"></script>
+    	<script src="Bounds.js"></script>
+        <script src="main.js"></script>
     </body>
 </html>

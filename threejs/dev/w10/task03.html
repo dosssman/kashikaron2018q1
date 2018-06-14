@@ -70,22 +70,56 @@
             varying vec3 normal_vector;
             uniform vec3 light_position;
 
-            vec3 CookTorranceReflection( vec3 C, vec3 L, vec3 N )
-              {
-                  float ka = 0.3;
-                  float kd = 0.5;
-                  float ks = 0.8;
-                  float n = 50.0;
-                  vec3 R = reflect( -L, N );
-                  float dd = max( dot( N, L ), 0.0 );
-                  float ds = pow( max( dot( R, N ), 0.0 ), n );
-                  if ( dd <= 0.0 ) { ds = 0.0; }
-                  float Ia = ka;
-                  float Id = kd * dd;
-                  float Is = ks * ds;
+            vec3 CookTorranceReflection( vec3 C, vec3 L, vec3 N ) {
+                float PI = 3.14159265;
+                float ka = 0.3;
+                float kd = 0.5;
+                float ks = 0.8;
+                float n = 50.0;
+                //Cook Torrance additional params
+                float roughness = .21;
+                float F0 = .975; // Schlik's appro; Refflection intensity of
+                //light parallel to the normal;
 
-                  return C * ( Ia + Id + Is );
-              }
+                //View Vector
+                vec3 V = - point_position.xyz;
+
+                vec3 R = reflect( -L, N );
+                float dd = max( dot( N, L ), 0.0 );
+                float ds = pow( max( dot( R, N ), 0.0 ), n );
+                if ( dd <= 0.0 ) {
+                    // Halfway Vector
+                    vec3 H = normalize(L+V);
+                    float NdotH = max(.0, dot(N, H));
+                    float NdotV = max(.0, dot(N, V));
+                    float VdotH = max(.0, dot(L, H));
+
+                    // Fresnel Reflectance using Schlick's approximation
+                    float F = pow(1.0 + VdotH, 5.0);
+                    F *= (1.0 - F0);
+                    F += F0;
+
+                    //Beckmann Microfascet distributions
+                    float m_squared = roughness * roughness;
+                    float r1 = 1.0 / (PI * m_squared * pow(NdotH, 4.0));
+                    float r2 = (NdotH * NdotH - 1.0) / (m_squared * NdotH * NdotH);
+                    float D = r1 * exp(r2);
+
+                    // Geometric shadowing
+                    float two_NdotH = 2.0 * NdotH;
+                    float g1 = (two_NdotH * NdotV) / VdotH;
+                    float g2 = (two_NdotH * dd) / VdotH;
+                    float G = min(1.0, min(g1, g2));
+
+                    // Geometric Attenuation Term
+                    ds = (F * D * G) / (4.0 * dd * NdotV);
+                }
+                float Ia = ka;
+                float Id = kd * dd;
+                float Is = ks * ds;
+
+                return C * ( Ia + Id + Is );
+            }
 
             void main() {
                 vec3 C = point_color;
@@ -163,17 +197,17 @@
         <!--  Phong Shaders from W06 End-->
     </head>
     <body style="margin:0">
-	<script src="ref/three.min.js"></script>
-	<script src="ref/TrackballControls.js"></script>
-	<script src="http://threejs.org/examples/js/math/Lut.js"></script>
-	<script src="http://naohisas.github.io/KVS.js/Build/KVS.min.js"></script>
-	<script src="http://naohisas.github.io/KVS.js/Build/KVS2THREE.min.js"></script>
-	<script src="http://naohisas.github.io/KVS.js/Source/KVSLobsterData.js"></script>
-	<script src="ref/Bounds.js"></script>
-	<script src="Isosurfaces03.js"></script>
-	<script src="main03.js"></script>
-	<script>
-	 main();
-	</script>
+    	<script src="ref/three.min.js"></script>
+    	<script src="ref/TrackballControls.js"></script>
+    	<script src="http://threejs.org/examples/js/math/Lut.js"></script>
+    	<script src="http://naohisas.github.io/KVS.js/Build/KVS.min.js"></script>
+    	<script src="http://naohisas.github.io/KVS.js/Build/KVS2THREE.min.js"></script>
+    	<script src="http://naohisas.github.io/KVS.js/Source/KVSLobsterData.js"></script>
+    	<script src="ref/Bounds.js"></script>
+    	<script src="Isosurfaces03.js"></script>
+    	<script src="main03.js"></script>
+    	<script>
+    	 main();
+    	</script>
     </body>
 </html>
