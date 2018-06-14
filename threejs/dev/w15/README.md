@@ -30,40 +30,39 @@ parameters such as the isovalue, shader programs and colors.
 
   - Lambertian Reflection model parameters
 
-    -- Ambient: the ambient reflection coefficient
-    -- Diffuse: the diffuse reflection coefficient
+    * Ambient: the ambient reflection coefficient
+    * Diffuse: the diffuse reflection coefficient
 
   - BlinnPhong Reflection model
 
-    -- Ambient: the ambient reflection coefficient
-    -- Diffuse: the diffuse reflection coefficient
-    -- Specular: the specular relfection coefficient
-    -- Spec. Pow.: value of the exponent of the dot product between the reflection
+    * Ambient: the ambient reflection coefficient
+    * Diffuse: the diffuse reflection coefficient
+    * Specular: the specular relfection coefficient
+    * Spec. Pow.: value of the exponent of the dot product between the reflection
        and normal vectors
 
   - Cook Torrance Reflection model
 
-    -- Ambient: the ambient reflection coefficient
-    -- Diffuse: the diffuse reflection coefficient
-    -- Specular: the specular relfection coefficient
-    -- Spec. Pow.: value of the exponent of the dot product between the reflection
-       and normal vector
-    -- Roughness: Roughness coefficient of the material
-    -- Schlick: Schlik approximetion constant
+    * Ambient: the ambient reflection coefficient
+    * Diffuse: the diffuse reflection coefficient
+    * Specular: the specular relfection coefficient
+    * Spec. Pow.: value of the exponent of the dot product between the reflection and normal vector
+    * Roughness: Roughness coefficient of the material
+    * Schlick: Schlik approximetion constant
 
   - Toon shader with 4 levels
 
-    -- Ambient: the ambient reflection coefficient
-    -- Diffuse: the diffuse reflection coefficient
-    -- Specular: the specular relfection coefficient
-    -- Spec. Pow.: value of the exponent of the dot product between the reflection
+    * Ambient: the ambient reflection coefficient
+    * Diffuse: the diffuse reflection coefficient
+    * Specular: the specular relfection coefficient
+    * Spec. Pow.: value of the exponent of the dot product between the reflection
        and normal vectors
 
 * Color selection
 
   There are two available options, namely:
-  - Default: using a White-Red color map function
-  - RGB: Set a color based on parametrizable RGB value
+  * Default: using a White-Red color map function
+  * RGB: Set a color based on parametrizable RGB value
 
 * Color parametrization
 
